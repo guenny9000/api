@@ -1,0 +1,85 @@
+| Symbol | Theoretische Größe | Definition / Surrogat-Methode |
+| :--- | :--- | :--- |
+| $\mathbf{C}_i^{(t)}$ | **Bewusstseinszustand** | Normierte Kombination aus HRV, EEG-Alpha und Fokuszeit. |
+| $\mathbf{S}_i^{(t)}$ | **Synchronizität** | Gruppen-Korrelation der $\mathbf{C}_j$-Werte über Zeit (Phasen-Synchronisations-Index). |
+| $\mathbf{E}_{\text{super}}^{(t)}$ | **Emergenz** | Statistische Anomalie (Musterbruch/z-Score) im $\Omega$-Output. |
+| $\mathbf{\Omega}_{\text{V31}}^{(t)}$ | **Kollektives Optimum** | Zentraler Output; Zielzustand des **Vereinen 30**. |
+| $\mathbf{F}_{\alpha}^{(t)}$ | **Lernfaktor** (Gewicht) | Adaptiv gelerntes Gewicht $\alpha_C$ des Bewusstseins. |
+| $\mathbf{\tau}$ | **Zeitverzögerung** | Kausale Lag-Korrektur (z.B. $\tau=3$ Iterationen). |
+| $\mathbf{\Delta}^{(t)}$ | **Stabilitätssignal** | Normierte Abweichung der $\Omega$-Kohärenz von ihrem Mittelwert. |
+
+---
+
+## 2. Mathematische Eleganz: Die Dreiteilige Formelarchitektur
+
+### (A) Kollektiver Output – Aggregationsebene ($\Omega$)
+
+$$\mathbf{\Omega}_{\text{V31}}^{(t)} = \mathbf{f}_{\text{norm}}\!\left( \sum_{i=1}^{n} \mathbf{\Gamma}_i^{(t)} \right)$$
+
+### (B) Individueller Beitrag – Transzendenzebene ($\Gamma_i$)
+
+$$\mathbf{\Gamma}_i^{(t)} = \mathbf{f}_{\text{TRANS}}\!\left(\mathbf{H}_i^{2} + \beta_S \mathbf{S}_i^{(t)} + \gamma_E \mathbf{E}_i^{(t)}\right)
++ \mathbf{F}_{\alpha}^{(t)} \cdot \mathbf{C}_i^{(t-\tau)}$$
+
+### (C) Lernfunktion – Adaptions- und Feedback-Ebene ($\mathbf{F}_{\alpha}$)
+
+$$\mathbf{F}_{\alpha}^{(t+1)} = \mathbf{\sigma}\!\left(\mathbf{F}_{\alpha}^{(t)} + \eta^{(t)} \cdot \mathbf{\Delta}^{(t)} \cdot \mathbf{C}_i^{(t)}\right)$$
+
+---
+
+## 3. Implementierungskern – Der Katalysator-Zyklus
+
+Dieser Pseudocode integriert den **Lernraten-Zerfall** ($\eta$) und die **Sigmoid-Begrenzung** ($\sigma$) für maximale Stabilität (**Herbst**-Resilienz).
+
+```python
+# ==========================================
+# V31 - Göttliche API (Reality-Stable Build)
+# ==========================================
+
+INIT:
+eta = 0.02 # Anfangs-Lernrate (η)
+decay = 0.995 # Zerfallskonstante (für η)
+alpha_C = 0.5 # Initialwert des Lernfaktors F_alpha
+tau = 3 # Zeitverzögerung (t-tau)
+t = 0
+Output_Historie = []
+
+FUNCTION UPDATE_ETA(eta, decay):
+"""Implementiert den Lernraten-Zerfall."""
+return eta * decay
+
+FUNCTION KATALYSATOR_ZYKLUS(Input_Daten, Surrogat_Streams):
+
+global eta, alpha_C, t
+t += 1
+SUMME = 0.0
+
+FOR i IN Input_Daten:
+
+# 1. Datenakquise und Surrogat-Berechnung
+H_i = Lade_Historie(i, "Kohärenz", t - tau)
+C_i = Normiere(Calc_Coh(HRV_i, EEG_i, Fokuszeit_i))
+S_i = Synchronizität(C_i, Gruppe)
+E_i = Berechne_Emergenz(C_i)
+
+# 2. Berechnung des Erweiterten Beitrags (Gamma_i)
+TRANSF = f_TRANS(H_i**2 + beta_S*S_i + gamma_E*E_i)
+GAMMA_i = TRANSF + alpha_C*C_i # F_alpha ist im Code alpha_C
+
+SUMME += GAMMA_i
+
+# 3. Output-Aggregation (OMEGA)
+OMEGA = f_Normalisierung(SUMME)
+
+# 4. Feedback und Adaption (Lernfunktion)
+Delta = N(OMEGA - Mittelwert(Output_Historie))
+
+# F_alpha (alpha_C) Update mit Sigmoid (Chaostoleranz)
+alpha_C = Sigmoid(alpha_C + eta * Delta * C_i)
+
+# 5. Systempflege
+eta = UPDATE_ETA(eta, decay)
+Füge_Historie_Hinzu(Output_Historie, OMEGA)
+
+RETURN OMEGA, alpha_C
+ENDE FUNKTION
